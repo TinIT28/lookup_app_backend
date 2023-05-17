@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import bcrypt from 'bcrypt';
 
 @Schema({
     timestamps: true,
