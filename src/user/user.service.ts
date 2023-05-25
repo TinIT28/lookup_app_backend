@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Session } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user-dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user-dto';
+import { UserDetails } from 'src/utils/types';
 
 @Injectable()
 export class UserService {
@@ -16,22 +17,36 @@ export class UserService {
         private jwtService: JwtService
     ) { }
 
-    async create(user: CreateUserDto): Promise<{ token: string }> {
+    async create(user: CreateUserDto): Promise<User | undefined> {
         user.hashPassword = await bcrypt.hash(user.password, 8);
         const newUser = await this.userModel.create(user);
-
-        const token = this.jwtService.sign({ id: newUser._id })
         await newUser.save();
 
         delete newUser.password;
 
-        return { token };
+        return newUser;
     }
 
-    async login(loginDto: LoginUserDto): Promise<{ token: string }> {
+    async validateUser(email: string, password: string): Promise<User | undefined> {
+
+        const user = await this.userModel.findOne({ email }).exec();
+        const doesUserExist = !!user;
+
+        if (!doesUserExist) return null;
+
+        const doesPasswordMatch = await bcrypt.compare(password, user.hashPassword);
+
+        if (!doesPasswordMatch) return null;
+
+        return user;
+
+
+    }
+
+    async login(loginDto: LoginUserDto): Promise<{ token: string } | undefined> {
         const { email, password } = loginDto;
 
-        const user = await this.userModel.findOne({ email });
+        const user = await this.validateUser(email, password);
 
         if (!user) {
             throw new UnauthorizedException('Invalid email or password');
@@ -43,8 +58,28 @@ export class UserService {
             throw new UnauthorizedException('Invalid password')
         }
 
-        const token = this.jwtService.sign({ id: user._id })
+        const jwt = await this.jwtService.signAsync({ user });
 
-        return { token }
+        return { token: jwt }
+    }
+
+    async findUserGoogle(email: any): Promise<User> {
+        const user = await this.userModel.findOne(email);
+        return user;
+    }
+
+    async findUserLocal(email: string): Promise<User | undefined> {
+        const user = await this.userModel.findOne({ email })
+        return user;
+    }
+
+    async createUserGoogle(details: UserDetails) {
+        const newUser = await this.userModel.create(details);
+        return newUser.save();
+    }
+
+    async findUserService(id: ObjectId) {
+        const user = await this.userModel.findById(id);
+        return user;
     }
 }

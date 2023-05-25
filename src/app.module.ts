@@ -2,13 +2,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
+import { PassportModule } from '@nestjs/passport';
+import { PostModule } from './post/post.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -16,11 +18,13 @@ import { AuthService } from './auth/auth.service';
       envFilePath: '.env',
       isGlobal: true,
     }),
+    PassportModule.register({ session: true }),
     MongooseModule.forRoot(process.env.DB_URI),
     UserModule,
     AuthModule,
+    PostModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService, JwtService],
 })
 export class AppModule { }
