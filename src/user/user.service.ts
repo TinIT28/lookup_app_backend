@@ -63,6 +63,11 @@ export class UserService {
         return { token: jwt }
     }
 
+    async googleLogin(email: string): Promise<{ token: string } | undefined> {
+        const jwt = await this.jwtService.signAsync({ email });
+        return { token: jwt }
+    }
+
     async findUserGoogle(email: any): Promise<User> {
         const user = await this.userModel.findOne(email);
         return user;
@@ -80,6 +85,11 @@ export class UserService {
 
     async findUserService(id: ObjectId) {
         const user = await this.userModel.findById(id);
+        return user;
+    }
+
+    async findUserById(userId: string) {
+        const user = await this.userModel.findById(userId)
         return user;
     }
 }

@@ -26,13 +26,13 @@ export class AuthController {
     @Get('google/login')
     @UseGuards(GoogleAuthGuard)
     async handleLogin() {
-        return { msg: 'Google Authentication' };
+        return {}
     }
 
     @Get('google/redirect')
     @UseGuards(GoogleAuthGuard)
-    async handleRedirect() {
-        return { msg: 'Ok' };
+    async handleRedirect(@Req() req): Promise<{ token: string } | undefined> {
+        return this.authService.googleLogin(req.user.email)
     }
 
     // @Get('status')

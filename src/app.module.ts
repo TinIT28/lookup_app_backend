@@ -11,6 +11,8 @@ import { AuthService } from './auth/auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { PostModule } from './post/post.module';
 import { JwtService } from '@nestjs/jwt';
+import { CommentModule } from './comment/comment.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { JwtService } from '@nestjs/jwt';
     UserModule,
     AuthModule,
     PostModule,
+    CommentModule,
+    CloudinaryModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService, JwtService],

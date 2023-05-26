@@ -35,6 +35,12 @@ export class User {
     @Prop()
     district: string;
 
+    @Prop({ type: [String], default: [] })
+    followers: string[];
+
+    @Prop({ type: [String], default: [] })
+    followings: string[];
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

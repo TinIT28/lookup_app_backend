@@ -11,14 +11,23 @@ export class Posts {
     @Prop()
     content: string;
 
-    @Prop([String])
-    images: string[];
+    @Prop()
+    image: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    user: mongoose.ObjectId;
+    user: any;
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-    likes: mongoose.ObjectId[];
+    @Prop({ type: [String], default: [] })
+    likes: string[];
+
+    @Prop([
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Comment',
+            default: [],
+        },
+    ])
+    comments: any[];
 
 
 }

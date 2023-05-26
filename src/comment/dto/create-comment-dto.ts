@@ -1,6 +1,4 @@
 /* eslint-disable prettier/prettier */
-
-export class CreatePostDto {
+export class CreateCommentDto {
     content: string;
-    image: string;
 }

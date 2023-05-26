@@ -39,4 +39,8 @@ export class AuthService {
     async findUser(id: ObjectId) {
         return this.userService.findUserService(id);
     }
+
+    async googleLogin(email: string): Promise<{ token: string } | undefined> {
+        return this.userService.googleLogin(email);
+    }
 }
