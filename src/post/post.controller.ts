@@ -17,6 +17,19 @@ export class PostController {
         private postService: PostService,
         private userService: UserService) { }
 
+    @Get()
+    async getAllPost(
+        @Res() res: Response,
+        @Request() req,
+    ) {
+        try {
+            const posts = await this.postService.getAll();
+            res.status(200).json(posts)
+        } catch (error) {
+            res.status(500).json({ message: error.message })
+        }
+    }
+
     @UseGuards(JwtGuard)    
     @Post()
     async createPost(
@@ -25,9 +38,22 @@ export class PostController {
         @Body() post: CreatePostDto,
     ) {
         try {
-            console.log(req.user.id);
             const newPost = await this.postService.create(req.user._id, post);
             res.status(201).json(newPost)
+        } catch (error) {
+            res.status(500).json({ message: error.message })
+        }
+    }
+
+    @Get('owner')
+    async getOwnerPost(
+        @Res() res: Response,
+        @Request() req,
+        @Body() userId: string
+    ) {
+        try {
+            const user = await this.postService.getUserDetail(userId);
+            res.status(200).json(user)
         } catch (error) {
             res.status(500).json({ message: error.message })
         }
@@ -42,7 +68,7 @@ export class PostController {
         @Body() post: UpdatePostDto
     ) {
         try {
-            const newPost = await this.postService.update(postId, post, req.user._id);
+            const newPost = await this.postService.update(postId, post, req.user.id);
             res.status(200).json(newPost);
         } catch (error) {
             res.status(500).json({ message: error.message });

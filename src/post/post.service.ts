@@ -32,8 +32,15 @@ export class PostService {
         }
     }
 
-    async getAll(): Promise<Posts[]> {
-        const posts = await this.postModel.find();
+    async getUserDetail(userId: string) {
+        const user = await this.userService.findUserNameById(userId);
+        return user;
+    }
+
+    async getAll() {
+        const posts = await this.postModel.find()
+            .populate('user', 'name')
+            .sort({ createdAt: -1 });
         return posts;
     }
 

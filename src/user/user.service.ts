@@ -8,6 +8,7 @@ import { CreateUserDto } from './dto/create-user-dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user-dto';
 import { UserDetails } from 'src/utils/types';
+import { Response, Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,14 @@ export class UserService {
         return newUser;
     }
 
+    async findUserNameById(userId: string) {
+        const user = await this.userModel.findById(userId).exec();
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return user;
+    }
+
     async validateUser(email: string, password: string): Promise<User | undefined> {
 
         const user = await this.userModel.findOne({ email }).exec();
@@ -43,7 +52,7 @@ export class UserService {
 
     }
 
-    async login(loginDto: LoginUserDto): Promise<{ token: string } | undefined> {
+    async login(loginDto: LoginUserDto, res: Response) {
         const { email, password } = loginDto;
 
         const user = await this.validateUser(email, password);
@@ -60,7 +69,17 @@ export class UserService {
 
         const jwt = await this.jwtService.signAsync({ user });
 
-        return { token: jwt }
+        const options = {
+            expires: new Date(
+                Date.now() + 3 * 24 * 60 * 60 * 1000
+            ),
+            httpOnly: true
+        };
+
+        res.status(200).cookie('jwt', jwt, options).json({
+            user,
+            jwt,
+        })
     }
 
     async googleLogin(email: string): Promise<{ token: string } | undefined> {
@@ -89,7 +108,12 @@ export class UserService {
     }
 
     async findUserById(userId: string) {
-        const user = await this.userModel.findById(userId)
-        return user;
+        try {
+            const user = await this.userModel.findById(userId);
+            return user;
+        } catch (error) {
+            throw error
+        }
     }
+
 }

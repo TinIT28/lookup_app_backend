@@ -33,3 +33,4 @@ export class Posts {
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);
+

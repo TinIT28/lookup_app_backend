@@ -8,6 +8,7 @@ import { UserDetails } from 'src/utils/types';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/schema/user.schema';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -31,9 +32,9 @@ export class AuthService {
 
     }
 
-    async loginUser(loginUserDto: LoginUserDto): Promise<{ token: string }> {
+    async loginUser(loginUserDto: LoginUserDto, res: Response) {
 
-        return this.userService.login(loginUserDto)
+        return this.userService.login(loginUserDto, res)
     }
 
     async findUser(id: ObjectId) {
