@@ -14,8 +14,8 @@ import { Response } from 'express';
 export class AuthService {
     constructor(private userService: UserService) { }
 
-    async register(user: CreateUserDto): Promise<User | undefined> {
-        return this.userService.create(user);
+    async register(user: CreateUserDto, res: Response) {
+        return this.userService.create(user, res);
     }
 
     async validateUser(details: UserDetails) {
@@ -33,8 +33,11 @@ export class AuthService {
     }
 
     async loginUser(loginUserDto: LoginUserDto, res: Response) {
-
         return this.userService.login(loginUserDto, res)
+    }
+
+    async logout(res: Response) {
+        return this.userService.logout(res);
     }
 
     async findUser(id: ObjectId) {

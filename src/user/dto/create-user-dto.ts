@@ -15,11 +15,8 @@ export class CreateUserDto {
 
     hashPassword: string;
 
-    @IsString()
-    @IsNotEmpty()
-    readonly name: string;
+    confirmPassword: string;
 
-    @IsString()
     readonly image: string;
 
     @IsPhoneNumber('VN')
@@ -32,7 +29,11 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    readonly province: string;
+    readonly name: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly categoryBusiness: string;
 
     @IsString()
     @IsNotEmpty()
@@ -41,4 +42,12 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     readonly district: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly ward: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly address: string;
 }

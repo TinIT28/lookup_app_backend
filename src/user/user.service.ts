@@ -8,7 +8,7 @@ import { CreateUserDto } from './dto/create-user-dto';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user-dto';
 import { UserDetails } from 'src/utils/types';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
 @Injectable()
 export class UserService {
@@ -18,14 +18,31 @@ export class UserService {
         private jwtService: JwtService
     ) { }
 
-    async create(user: CreateUserDto): Promise<User | undefined> {
-        user.hashPassword = await bcrypt.hash(user.password, 8);
-        const newUser = await this.userModel.create(user);
-        await newUser.save();
+    async create(user: CreateUserDto, res: Response) {
+        if (user.password !== user.confirmPassword) {
+            throw Error("Please input confirm password match password")
+        } else {
+            user.hashPassword = await bcrypt.hash(user.password, 8);
+            const newUser = await this.userModel.create(user);
+            await newUser.save();
 
-        delete newUser.password;
+            delete newUser.password;
 
-        return newUser;
+            const jwt = await this.jwtService.signAsync({ newUser });
+
+            const options = {
+                expires: new Date(
+                    Date.now() + 3 * 24 * 60 * 60 * 1000
+                ),
+                httpOnly: true
+            };
+
+            res.status(200).cookie('jwt', jwt, options).json({
+                jwt,
+                user: newUser
+            });
+        }
+
     }
 
     async findUserNameById(userId: string) {
@@ -48,8 +65,6 @@ export class UserService {
         if (!doesPasswordMatch) return null;
 
         return user;
-
-
     }
 
     async login(loginDto: LoginUserDto, res: Response) {
@@ -82,6 +97,17 @@ export class UserService {
         })
     }
 
+    async logout(res: Response) {
+        res.cookie("jwt", null, {
+            expires: new Date(Date.now()),
+            httpOnly: true,
+        });
+
+        res.status(200).json({
+            message: "Logouted out"
+        })
+    }
+
     async googleLogin(email: string): Promise<{ token: string } | undefined> {
         const jwt = await this.jwtService.signAsync({ email });
         return { token: jwt }
@@ -109,7 +135,7 @@ export class UserService {
 
     async findUserById(userId: string) {
         try {
-            const user = await this.userModel.findById(userId);
+            const user = await this.userModel.findById(userId).select("-hashPassword");
             return user;
         } catch (error) {
             throw error

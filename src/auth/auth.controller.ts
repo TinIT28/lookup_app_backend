@@ -15,8 +15,8 @@ export class AuthController {
 
     @UsePipes(new ValidationPipe())
     @Post('register')
-    async registerUser(@Body() user: CreateUserDto): Promise<User | undefined> {
-        return this.authService.register(user);
+    async registerUser(@Body() user: CreateUserDto, @Res() res: Response) {
+        return this.authService.register(user, res);
     }
 
 
@@ -24,6 +24,11 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     async login(@Body() user: LoginUserDto, @Res({ passthrough: true }) res: Response) {
         return this.authService.loginUser(user, res);
+    }
+
+    @Get('/logout')
+    async logout(@Res() res: Response) {
+        return this.authService.logout(res);
     }
 
     @Get('google/login')

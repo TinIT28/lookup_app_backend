@@ -7,5 +7,5 @@ export class CreatePostDto {
     @IsNotEmpty()
     content: string;
 
-    image: string;
+    images: string[];
 }

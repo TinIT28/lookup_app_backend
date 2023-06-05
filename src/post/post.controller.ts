@@ -17,6 +17,7 @@ export class PostController {
         private postService: PostService,
         private userService: UserService) { }
 
+    @UseGuards(JwtGuard)
     @Get()
     async getAllPost(
         @Res() res: Response,

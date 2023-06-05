@@ -21,9 +21,6 @@ export class User {
     hashPassword: string
 
     @Prop()
-    name: string;
-
-    @Prop()
     image: string;
 
     @Prop()
@@ -33,13 +30,19 @@ export class User {
     description: string;
 
     @Prop()
-    province: string;
+    name: string;
+
+    @Prop()
+    categoryBusiness: string;
 
     @Prop()
     city: string;
 
     @Prop()
     district: string;
+
+    @Prop()
+    ward: string;
 
     @Prop({ type: [String], default: [] })
     followers: string[];
