@@ -49,7 +49,8 @@ export class PostService {
     }
 
     async getById(id: ObjectId): Promise<Posts> {
-        const post = await this.postModel.findById(id)
+        const post = await this.postModel.findById(id).populate('comments', 'content');
+        this.postGateway.handleGetPostById(post)
         return post;
     }
 
@@ -130,8 +131,9 @@ export class PostService {
             const foundPost = await this.postModel.findById(postId);
             const newComment = await this.commentService.postComment(userId, comment);
             const updatedPost = await foundPost.updateOne({
-                $push: { comments: newComment.id }
+                $push: { comments: newComment._id }
             });
+            this.postGateway.handlePostAddComment(newComment);
             return newComment;
         } catch (error) {
             throw error

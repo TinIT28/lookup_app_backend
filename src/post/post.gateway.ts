@@ -8,6 +8,16 @@ export class PostGateway {
     server: Server;
 
     @SubscribeMessage('post')
+    handleGetPost(post: any) {
+        this.server.emit('getPost', post);
+    }
+
+    @SubscribeMessage('post')
+    handleGetPostById(post: any) {
+        this.server.emit('getPostById', post);
+    }
+
+    @SubscribeMessage('post')
     handlePostCreated(post: any) {
         this.server.emit('postCreated', post);
     }
@@ -23,7 +33,9 @@ export class PostGateway {
     }
 
     @SubscribeMessage('post')
-    handleGetPost(post: any) {
-        this.server.emit('getPost', post);
+    handlePostAddComment(comment: any) {
+        this.server.emit('addComment', comment)
     }
+
+
 }
