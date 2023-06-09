@@ -9,13 +9,16 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user-dto';
 import { UserDetails } from 'src/utils/types';
 import { Response } from 'express';
+import { UpdateUserDto } from './dto/update-user-dto';
+import { UserGateway } from './user.gateway';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel(User.name)
         private userModel: mongoose.Model<User>,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private userGateway: UserGateway,
     ) { }
 
     async create(user: CreateUserDto, res: Response) {
@@ -137,6 +140,24 @@ export class UserService {
         try {
             const user = await this.userModel.findById(userId).select("-hashPassword");
             return user;
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async editUser(userId: string, userData: UpdateUserDto) {
+        try {
+            const user = await this.userModel.findById(userId).select("-hashPassword");
+            if (user) {
+                user.name = userData.name;
+                user.categoryBusiness = userData.categoryBusiness;
+                user.phoneNumber = userData.phoneNumber;
+                user.ward = userData.address;
+                this.userGateway.handleUpdateUser(user);
+                return await user.save();
+            } else {
+                throw Error("User not found")
+            }
         } catch (error) {
             throw error
         }
