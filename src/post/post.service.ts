@@ -42,7 +42,7 @@ export class PostService {
 
     async getAll() {
         const posts = await this.postModel.find()
-            .populate('user', 'name')
+            .populate('user', 'name image')
             .sort({ createdAt: -1 });
         this.postGateway.handleGetPost(posts);
         return posts;

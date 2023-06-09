@@ -21,7 +21,7 @@ export class User {
     hashPassword: string
 
     @Prop()
-    image: string;
+    image: string[];
 
     @Prop()
     phoneNumber: string;

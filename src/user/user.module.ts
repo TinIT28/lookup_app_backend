@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserController } from './user.controller';
 import { UserGateway } from './user.gateway';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { UserGateway } from './user.gateway';
                 }
             }
         }),
+        CloudinaryModule,
     ],
     providers: [UserService, UserGateway],
     exports: [UserService],

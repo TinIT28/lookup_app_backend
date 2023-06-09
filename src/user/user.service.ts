@@ -11,12 +11,14 @@ import { UserDetails } from 'src/utils/types';
 import { Response } from 'express';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { UserGateway } from './user.gateway';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel(User.name)
         private userModel: mongoose.Model<User>,
+        private cloudinaryService: CloudinaryService,
         private jwtService: JwtService,
         private userGateway: UserGateway,
     ) { }
@@ -153,6 +155,9 @@ export class UserService {
                 user.categoryBusiness = userData.categoryBusiness;
                 user.phoneNumber = userData.phoneNumber;
                 user.ward = userData.address;
+                if (userData.image && user.image !== userData.image) {
+                    user.image = (await this.cloudinaryService.convertImagesCloudinary(userData.image))
+                }
                 this.userGateway.handleUpdateUser(user);
                 return await user.save();
             } else {

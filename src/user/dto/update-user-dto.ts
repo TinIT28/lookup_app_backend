@@ -15,4 +15,7 @@ export class UpdateUserDto {
 
     @IsString()
     readonly address: string;
+
+    @IsString()
+    readonly image: string[];
 }
