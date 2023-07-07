@@ -49,7 +49,7 @@ export class PostService {
     }
 
     async getById(id: ObjectId): Promise<Posts> {
-        const post = await this.postModel.findById(id).populate('comments', 'content');
+        const post = await this.postModel.findById(id).populate('comments', 'content').populate('user', 'name image');
         this.postGateway.handleGetPostById(post)
         return post;
     }

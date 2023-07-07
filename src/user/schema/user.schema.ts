@@ -44,6 +44,9 @@ export class User {
     @Prop()
     ward: string;
 
+    @Prop()
+    address: string;
+
     @Prop({ type: [String], default: [] })
     followers: string[];
 
